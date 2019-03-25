@@ -1,0 +1,136 @@
+建仓与配置
+cd path
+git init name_new
+cd name_new
+git config --local user.name 'localuser1'
+git config --local user.email 'xx@xx.com'
+git config --local --list
+cp path_afile path_aim
+git status
+git add afile
+git commit -m'add afile'
+#不经过暂存区直接放进仓库里（非新建文件）
+git commit -am'log'
+————
+#查看log
+git log→当前分支
+git log --all --graph →所有分支shell中图形化
+gitk --all → 所有分支图形界面查看
+git log --oneline -n2
+--------
+#工作区 恢复成 暂存区
+git checkout -- 文件名 →A|B|C >> A|B|B
+#分支
+git branch -v
+git branch -av 
+git checkout -b ch1
+git checkout -b ch1 remotes后的_/ch1 →基于远端ch1建立的本地ch1分支（本地ch1的变动可通过‘git push’直接推到远端ch1分支）
+git branch -d ch1
+git checkout master → 切换分支
+#帮助文档help
+git help (--web) log
+--------
+#vi编辑模式（cat 查看模式）
+i → 进入编辑模式
+ESC /:wq! → 写入并退出
+ ESC /:q! → 退出不保存
+/hello → 查找“hello”
+#输出到>指定文件（没有就创建）>>→追加
+echo "str." > readme
+#显示所有文件
+.git/objects -type f
+#删除文件
+rm -rf 文件名
+---------
+#查看git文件内容
+git cat-file -p OBJ
+#分离头指针
+git checkout a_commit
+git commit
+git branch <new-branch-name> newcommit_hash
+————————
+#修改最近一次commit
+git commit --amend
+#修改之前commit
+git rebase -i 父节点_hash
+	命令修改：pick → r
+	命令合并：pick → s (pick保留最前面一个，其余要合并的搞成s)
+		（18课）非连续的（变动最前面commit需要手动添加 pick hash_id→把间隔的commit复制粘贴在一起，原来的删掉）
+	命令删除：pick → drop
+#比对暂存区与HEAD
+git diff --cached →暂存区 vs HEAD
+git diff → 工作区vs暂存区
+git diff -- 文件名1 (文件名2...)
+#对比两次commit的差别
+git diff commit_a commit_b
+git diff HEAD HEAD^^ →父节点的父节点 或表示为 ~2
+git diff 分支名_or_hash_1 分支_or_hash_2 (-- 文件名1)
+————————————
+#合并 merge
+git merge -h → help
+(当前分支向rebase后的分支合并）
+git merge remotes后的_/ch1 →并过去
+git rebase remotes后的_/ch1 →当前分支不动，当前分支每个节点逐一并过去
+#删除文件
+git rm 文件名 → AB|AB|AB >> AB|A|A
+#清除暂存区
+git reset --hard →回到上一次刚commit完的状态 A|B|C >> A|A|A
+git reset HEAD  →清除暂存区，工作区保持不变  A|B|C >> A|A|C
+git reset HEAD -- 文件名1 文件名2
+#删除节点
+git reset --hard commit_hash →三区都回到该commit刚提交的状态 DCBA>>BA
+#删除分支
+git branch -d ch1
+——————
+——————
+#工作区临时存放
+git stash
+git stash list
+git stash apply →堆栈里信息还在
+git stash pop →堆栈里信息不在
+#不让git管理
+.gitignore
+vi .gitignore → +文件名 +文件夹名/
+#git备份
+git clone --bare path(pwd拷贝)/.git ya.git →哑巴协议
+git clone --bare file://path(pwd拷贝)/.git zhineng.git →智能协议
+#git同步变更到备份
+git remote -v
+git remote add 起个远端备份名 file://远端备份git地址
+git remote remove <name> 删除某个remote
+——————————
+github
+——————————
+#ssh
+查看有没有ssh>>ls -al ~/.ssh
+help→ssh→(generate...)
+#remote
+git remote add github [仓库中ssh粘贴过来]
+#pull？fetch
+fetch → 拉下来
+pull →拉下来并与本地master融合
+好习惯：工作前先git pull一下
+#不是基于远端master的push就会报错
+远近不一样 叫 non fast-forwards
+#推不上去先pull，出现冲突vi进去修改，git commit确认修改
+#文件名冲突，直接pull，diff 文件A 文件B 查看不同，git status →git rm 不需要的，git add 需要的 →git commit
+#git push -f →强推，一般禁止使用！
+git push -f origin commit_has:远端分支名
+git push this_remote_name →只能push当前分支 （--all 所有分支）
+git push --set-upstream this_remote_name 分支1 分支2 →只用第一次操作
+——————————————————
+craft
+——————————————————
+#同步源头
+(git remote -v)
+(git remote add upstream https://github.com/selfteaching/the-craft-of-selfteaching.git)
+git checkout master
+git fetch upstream && git reset --hard upstream/master && git push -f origin
+#同步自己的仓库
+git pull origin master : master
+git pull origin --all
+#每次玩结束后
+git push --all
+#回滚
+git reset --hard commit_id
+git push origin HEAD --force
